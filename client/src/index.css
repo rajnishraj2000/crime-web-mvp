@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface text-slate-300 antialiased;
+  }
+}
+
+@layer utilities {
+  /* Scrollbar styling for dark theme (thin, subtle) */
+  .scrollbar-subtle::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+
+  /* Custom glow animation for active nodes/elements */
+  .glow-cyan {
+    box-shadow: 0 0 10px 0 rgba(6, 182, 212, 0.5);
+  }
+  
+  .glow-red {
+    box-shadow: 0 0 10px 0 rgba(239, 68, 68, 0.5);
+  }
+}
+
+/* Smooth transitions globally for all clickable elements */
+a, button, input, select, textarea {
+  @apply transition-all duration-200 ease-in-out;
+}
