@@ -3,7 +3,9 @@ import { Case, StatsData, AuditBlock, ChainVerification, ChainStats } from '../t
 import { auth } from '../config/firebase';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: import.meta.env.VITE_API_URL 
+    ? `${import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')}/api` 
+    : '/api',
 });
 
 // Attach Firebase ID token to every outgoing request

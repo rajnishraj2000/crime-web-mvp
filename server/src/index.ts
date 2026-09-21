@@ -37,7 +37,17 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors()); // Allow all origins for dev
+const allowedOrigins = ['http://localhost:5173', process.env.FRONTEND_URL].filter(Boolean);
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like server-to-server) or matching allowed origins
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 app.use(express.json({ limit: '10mb' })); // Support large JSON payloads (e.g., long FIR text)
 
 // Health Check Endpoint (public — no auth required)
