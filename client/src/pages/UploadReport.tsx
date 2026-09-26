@@ -87,6 +87,9 @@ export default function UploadReport() {
       // API returns { message, data: { entities, relationships } }
       const response = await extractEntities({ text, caseId: targetCaseId });
       setResult(response.data); // Properly set result to the nested data object
+
+      // Notify the sidebar to refresh the active cases list
+      window.dispatchEvent(new CustomEvent('cases-updated'));
     } catch (err) {
       console.error(err);
       alert('Failed to extract entities.');
@@ -102,6 +105,9 @@ export default function UploadReport() {
       alert('Report saved and graph updated successfully!');
       setResult(null);
       setText('');
+
+      // Notify the sidebar to refresh the active cases list
+      window.dispatchEvent(new CustomEvent('cases-updated'));
     } catch (err) {
       console.error(err);
       alert('Failed to save report.');

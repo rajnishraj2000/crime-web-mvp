@@ -1,4 +1,4 @@
-# CrimeGraph AI — MVP
+# CrimeWebAI — MVP
 
 > AI-Powered Criminal Network Analysis System (SIH 2026)
 

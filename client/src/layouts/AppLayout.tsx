@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Shield, LayoutDashboard, FileUp, Briefcase, Menu, X, LogOut } from 'lucide-react';
+import { Shield, LayoutDashboard, FileUp, Briefcase, Menu, X, LogOut, Loader2 } from 'lucide-react';
 import { getCases, seedData } from '../services/api';
 import { Case } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,21 +8,34 @@ import { useAuth } from '../contexts/AuthContext';
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [cases, setCases] = useState<Case[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [casesLoading, setCasesLoading] = useState(false);
   const location = useLocation();
   const { user, signOut } = useAuth();
 
-  const fetchCases = async () => {
+  const fetchCases = useCallback(async (showSpinner = false) => {
+    if (showSpinner) setCasesLoading(true);
     try {
       const data = await getCases();
       setCases(data || []);
     } catch (err) {
       console.error('Failed to fetch cases:', err);
+    } finally {
+      if (showSpinner) setCasesLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCases();
-  }, [location.pathname]);
+  }, [location.pathname, fetchCases]);
+
+  // Listen for the custom event dispatched after upload/extraction
+  useEffect(() => {
+    const handleCasesUpdated = () => {
+      fetchCases(true);
+    };
+    window.addEventListener('cases-updated', handleCasesUpdated);
+    return () => window.removeEventListener('cases-updated', handleCasesUpdated);
+  }, [fetchCases]);
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
@@ -108,7 +121,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Cases List */}
         <div className="px-4 py-2 flex-1 overflow-y-auto scrollbar-subtle">
-          <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-3">Active Cases</h2>
+          <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-3 flex items-center gap-2">
+            Active Cases
+            {casesLoading && (
+              <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
+            )}
+          </h2>
           <div className="flex flex-col gap-1">
             {cases.map((c) => (
               <Link
